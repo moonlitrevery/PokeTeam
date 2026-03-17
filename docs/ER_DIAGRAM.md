@@ -60,6 +60,28 @@
                                         │     stats (JSON) │
                                         │     created_at   │
                                         └──────────────────┘
+
+
+┌──────────────────┐
+│     USERS        │
+├──────────────────┤
+│ PK  id           │──┐
+│     username     │  │ 1
+│     email        │  │ earns
+│     password_hash│  │ N
+│     created_at   │  │
+└──────────────────┘  │
+                      ↓
+           ┌──────────────────┐
+           │   USER_BADGES    │
+           ├──────────────────┤
+           │ PK  id           │
+           │ FK  user_id      │
+           │     badge_name   │
+           │     badge_type   │
+           │     description  │
+           │     earned_at    │
+           └──────────────────┘
 ```
 
 ## Relacionamentos
@@ -91,11 +113,19 @@
 - **Tipo**: Many-to-Many (via JSON)
 - **Validação**: Feita na camada de Service
 
+### 5. USERS → USER_BADGES (1:N)
+- Um usuário pode ter múltiplos emblemas/conquistas
+- Cada emblema pertence a um único usuário
+- **Tipo**: One-to-Many
+- **Chave Estrangeira**: `user_badges.user_id` → `users.id`
+- **Deleção**: CASCADE (deletar usuário remove seus emblemas)
+
 ## Cardinalidades
 
 ```
 USERS (1) ─────< USER_TEAMS (N)
 USERS (1) ─────< USER_POKEDEX (N)
+USERS (1) ─────< USER_BADGES (N)
 POKEMON (1) ───< USER_POKEDEX (N)
 USER_TEAMS (*) ─────< POKEMON (*) [via JSON]
 ```
@@ -122,13 +152,18 @@ USER_TEAMS (*) ─────< POKEMON (*) [via JSON]
 - ✅ Validação de duplicatas no Service
 - ✅ Um usuário pode ter múltiplos times
 
+### USER_BADGES
+- ✅ `user_id` FK para users com ON DELETE CASCADE
+- ✅ Emblemas/conquistas por usuário (ex.: "Primeiro time", "10 Pokémon capturados")
+
 ## Índices para Performance
 
 ```sql
 -- Índices criados para otimizar queries frequentes
 CREATE INDEX idx_email ON users(email);
 CREATE INDEX idx_name ON pokemon(name);
-CREATE INDEX idx_user_id ON user_teams(user_id);
+CREATE INDEX idx_teams_user_id ON user_teams(user_id);
+CREATE INDEX idx_badges_user_id ON user_badges(user_id);
 ```
 
 ## Normalização

@@ -60,12 +60,12 @@ O **PokeTeam** resolve esses problemas através de:
 
 ### **Modelo Conceitual**
 
-O sistema é composto por 4 entidades principais:
+O sistema é composto por **5 entidades principais** (requisito do projeto acadêmico de Banco de Dados):
 
 ```
 USERS (Usuários)
   ├─ Atributos: id, username, email, password_hash, created_at
-  └─ Relacionamentos: 1:N com USER_POKEDEX e USER_TEAMS
+  └─ Relacionamentos: 1:N com USER_POKEDEX, USER_TEAMS e USER_BADGES
 
 POKEMON (Pokémon)
   ├─ Atributos: id, name, height, weight, base_experience, types, abilities, sprites, stats
@@ -77,6 +77,10 @@ USER_POKEDEX (Progresso do Usuário)
 
 USER_TEAMS (Times de Pokémon)
   ├─ Atributos: id, user_id, team_name, pokemon_ids, is_active, created_at
+  └─ Relacionamentos: N:1 com USERS
+
+USER_BADGES (Emblemas/Conquistas do Usuário)
+  ├─ Atributos: id, user_id, badge_name, badge_type, description, earned_at
   └─ Relacionamentos: N:1 com USERS
 ```
 
@@ -133,7 +137,19 @@ CREATE TABLE user_teams (
     is_active BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user_id (user_id)
+    INDEX idx_teams_user_id (user_id)
+);
+
+-- Tabela de emblemas/conquistas do usuário
+CREATE TABLE user_badges (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    badge_name VARCHAR(100) NOT NULL,
+    badge_type VARCHAR(50),
+    description TEXT,
+    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_badges_user_id (user_id)
 );
 ```
 
@@ -150,6 +166,12 @@ CREATE TABLE user_teams (
 Para visualizar o diagrama entidade-relacionamento completo com todos os relacionamentos e cardinalidades, consulte:
 
 📊 **[docs/ER_DIAGRAM.md](docs/ER_DIAGRAM.md)**
+
+### **Entrega – Projeto Final (Prática em Banco de Dados)**
+
+Para a entrega em PDF no Connect (capa, modelagem e SQL DML), use o documento:
+
+📄 **[docs/ENTREGA_PROJETO_FINAL_BD.md](docs/ENTREGA_PROJETO_FINAL_BD.md)** — preencha os nomes dos integrantes e exporte para PDF. Os exemplos DML completos estão em **scripts/exemplos_dml.sql**.
 
 ---
 

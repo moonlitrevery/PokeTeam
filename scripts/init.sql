@@ -40,7 +40,7 @@ CREATE TABLE user_pokedex (
     FOREIGN KEY (pokemon_id) REFERENCES pokemon(id) ON DELETE CASCADE
 );
 
--- 4. USER_TEAMS table (optional but useful)
+-- 4. USER_TEAMS table
 CREATE TABLE user_teams (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -48,5 +48,18 @@ CREATE TABLE user_teams (
     pokemon_ids JSON, -- Store team as [1, 4, 7, 25, ...]
     is_active BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_teams_user_id (user_id)
+);
+
+-- 5. USER_BADGES table (conquistas/emblemas do usuário)
+CREATE TABLE user_badges (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    badge_name VARCHAR(100) NOT NULL,
+    badge_type VARCHAR(50),
+    description TEXT,
+    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_badges_user_id (user_id)
 );
